@@ -1,0 +1,29 @@
+{
+  "name": "watermanager",
+  "version": "0.0.1",
+  "description": "icoaster background",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsc && node dist/app.js",
+    "watch": "nodemon --watch src/**/* -e ts,tsx --exec ts-node ./src/app.ts"
+  },
+  "author": "Nemesiss.Lin & Shuxuan.Huang",
+  "license": "MIT",
+  "dependencies": {
+    "@koa/cors": "^2.2.3",
+    "axios": "^0.19.0",
+    "koa": "^2.8.1",
+    "koa-bodyparser": "^4.2.1",
+    "koa-router": "^7.4.0",
+    "moment": "^2.24.0",
+    "safe-touch": "^0.2.5"
+  },
+  "devDependencies": {
+    "@types/koa": "^2.0.49",
+    "@types/koa-router": "^7.0.42",
+    "nodemon": "^1.19.2",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.3"
+  }
+}

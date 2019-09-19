@@ -1,0 +1,10 @@
+{
+    "Wechat":{
+        "AppID":"XXX",
+        "AppSecret":"YYY"
+    },
+    "Database":{
+        "MySQL":"Some connection string",
+        "Redis":"Some connection string"
+    }
+}
