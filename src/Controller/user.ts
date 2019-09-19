@@ -18,6 +18,10 @@ const Login = Controller('login', 'get', async ctx => {
         })
 })
 
+const BindCoaster = Controller('bind','post',async ctx => {
+    
+})
+
 const SayHello = Controller('hello','get',async ctx => ctx.body = "Hello!")
 
 export default [ Login,SayHello ]
