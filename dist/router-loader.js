@@ -4,6 +4,7 @@ const Koa = require("koa");
 const KoaRouter = require("koa-router");
 const fs = require("fs");
 const path = require("path");
+const auth_1 = require("./auth");
 class KoaWithRouter extends Koa {
     LoadRouters(paths) {
         const router = new KoaRouter();
@@ -12,9 +13,9 @@ class KoaWithRouter extends Koa {
     }
 }
 exports.KoaWithRouter = KoaWithRouter;
-function Controller(Path, Method, body) {
+function Controller(Path, Method, body, withAuth) {
     Path = Path.startsWith('/') ? Path : `/${Path}`;
-    return [Path, Method, body];
+    return [Path, Method, body, withAuth];
 }
 exports.Controller = Controller;
 const SupportHttpMethod = ['get', 'post', 'put'];
@@ -28,25 +29,27 @@ function DiscoveryAllController() {
     fs.readdirSync(controllers).forEach(fd => {
         if (!fileExtReg.test(fd))
             return;
-        // 创建当前控制器的路由
         const fileWithoutExt = fd.replace(fileExtReg, '');
         const loadPath = JoinPath(fd);
         const mod = require(loadPath).default;
         if (mod instanceof Array) {
             const _router = new KoaRouter({ prefix: `/${fileWithoutExt}` });
-            mod.forEach(([path, method, handler]) => {
+            mod.forEach(([path, method, mw, withAuth]) => {
                 const _method = method.toLowerCase();
                 if (SupportHttpMethod.indexOf(_method) != -1) {
                     // This is a correct controller, register it into router
+                    let middleware = [mw];
+                    if (withAuth)
+                        middleware.unshift(auth_1.JWTMiddleware);
                     switch (_method) {
                         case 'get':
-                            _router.get(path, handler);
+                            _router.get(path, ...middleware);
                             break;
                         case 'post':
-                            _router.post(path, handler);
+                            _router.post(path, ...middleware);
                             break;
                         case 'put':
-                            _router.put(path, handler);
+                            _router.put(path, ...middleware);
                             break;
                     }
                 }
