@@ -1,4 +1,5 @@
 import { Middleware } from "koa";
+import { VALIDATE_PARAM } from "./ParameterValidatorDecorator";
 
 const METHOD_ATTRIBUTE = "method"
 const PATH_ATTRIBUTE = "path"
@@ -13,7 +14,8 @@ export interface RouteInfo {
   subpath: string,
   method: string,
   fn: Middleware,
-  authorize:boolean
+  authorize?:boolean,
+  validator?: Middleware
 }
 
 // ------------- Helper ---------------
@@ -80,14 +82,15 @@ const GetRouteAttribute = (ControllerClass : IControllerBase): [string, RouteInf
       const subpath = Reflect.getMetadata(PATH_ATTRIBUTE, fn)
       const method = Reflect.getMetadata(METHOD_ATTRIBUTE, fn)
       const authorize = Reflect.getMetadata(AUTHORIZE_ATTRIBUTE, fn) || false
-
+      const validator = Reflect.getMetadata(VALIDATE_PARAM, fn)
       if (ValidateDecorator(subpath, method)) {
         routeInfo.push({
           root: rootPath,
           subpath: subpath,
           method: method,
           fn: fn,
-          authorize: authorize
+          authorize: authorize,
+          validator: validator
         })
         console.log(`Path is ${rootPath}${subpath} : ${method}. Added to router.`)
       }
@@ -95,7 +98,5 @@ const GetRouteAttribute = (ControllerClass : IControllerBase): [string, RouteInf
     return [rootPath, routeInfo]
   }
 }
-
-
 
 export { GetRouteAttribute, Controller, Get, Post, Put, Authorize }

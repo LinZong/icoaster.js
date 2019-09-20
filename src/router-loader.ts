@@ -13,12 +13,6 @@ class KoaWithRouter extends Koa {
   }
 }
 
-function Controller(Path: string, Method: string, body: Koa.Middleware, withAuth?: boolean) {
-  Path = Path.startsWith('/') ? Path : `/${Path}`
-  return [Path, Method, body, withAuth]
-}
-
-
 function DiscoveryAllController() {
   function JoinPath(...args: string[]) {
     return path.join(__dirname, 'Controller', ...args)
@@ -41,7 +35,10 @@ function DiscoveryAllController() {
         const __router = new KoaRouter({ prefix: rootPath })
         routeInfo.forEach(r => {
           let fnList = [r.fn]
+
           if(r.authorize) fnList.unshift(JWTMiddleware)
+          if(r.validator) fnList.unshift(r.validator)
+
           __router[r.method](r.subpath,...fnList)
         })
         result.push(__router)
@@ -51,4 +48,4 @@ function DiscoveryAllController() {
   return result
 }
 
-export { Controller, KoaWithRouter, DiscoveryAllController }
+export { KoaWithRouter, DiscoveryAllController }

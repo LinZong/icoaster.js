@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "tsc && node dist/app.js",
-    "watch": "nodemon --watch src/**/* -e ts,tsx --exec ts-node ./src/app.ts"
+    "watch": "nodemon --watch src/**/* -e ts,tsx --exec run.bat"
   },
   "author": "Nemesiss.Lin & Shuxuan.Huang",
   "license": "MIT",
