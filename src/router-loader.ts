@@ -3,6 +3,7 @@ import * as KoaRouter from 'koa-router'
 import * as fs from 'fs'
 import * as path from 'path'
 import {JWTMiddleware} from './auth'
+import { ControllerBase, GetRouteAttribute } from './Utils/Decorators/RouterDecorator';
 
 class KoaWithRouter extends Koa {
   LoadRouters(paths: KoaRouter[]) {
@@ -17,7 +18,6 @@ function Controller(Path: string, Method: string, body: Koa.Middleware, withAuth
   return [Path, Method, body, withAuth]
 }
 
-const SupportHttpMethod: string[] = ['get', 'post', 'put']
 
 function DiscoveryAllController() {
   function JoinPath(...args: string[]) {
@@ -28,35 +28,24 @@ function DiscoveryAllController() {
   const fileExtReg = /(\.js$|\.ts$|\.tsx$)/;
   const controllers = path.join(__dirname, 'Controller')
   fs.readdirSync(controllers).forEach(fd => {
-   
+
     if (!fileExtReg.test(fd)) return
 
-    const fileWithoutExt = fd.replace(fileExtReg, '')
-
     const loadPath = JoinPath(fd)
-    const mod: [string, string, Koa.Middleware, string][] = require(loadPath).default
-    if (mod instanceof Array) {
-      const _router = new KoaRouter({ prefix: `/${fileWithoutExt}` })
-      mod.forEach(([path, method, mw, withAuth]) => {
-        const _method = method.toLowerCase()
-        if (SupportHttpMethod.indexOf(_method) != -1) {
-          // This is a correct controller, register it into router
-          let middleware = [mw]
-          if (withAuth) middleware.unshift(JWTMiddleware)
-          switch (_method) {
-            case 'get':
-              _router.get(path, ...middleware)
-              break;
-            case 'post':
-              _router.post(path, ...middleware)
-              break;
-            case 'put':
-              _router.put(path, ...middleware)
-              break;
-          }
-        }
-      })
-      result.push(_router)
+    const controller = require(loadPath).default
+    if (controller && controller.prototype instanceof ControllerBase) {
+      // Begin extract router info from decorator
+      const info = GetRouteAttribute(controller)
+      if (info) {
+        const [rootPath, routeInfo] = info
+        const __router = new KoaRouter({ prefix: rootPath })
+        routeInfo.forEach(r => {
+          let fnList = [r.fn]
+          if(r.authorize) fnList.unshift(JWTMiddleware)
+          __router[r.method](r.subpath,...fnList)
+        })
+        result.push(__router)
+      }
     }
   })
   return result
