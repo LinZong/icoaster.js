@@ -1,5 +1,7 @@
 
-import { Table, Column, Model, DataType } from 'sequelize-typescript';
+import { Table, Column, Model, DataType,HasMany } from 'sequelize-typescript';
+import { UserSubscribe } from './Subscribe';
+
 
 @Table({ tableName: 'user_account', timestamps: false })
 export class UserAccount extends Model<UserAccount>
@@ -12,6 +14,12 @@ export class UserAccount extends Model<UserAccount>
 
     @Column({ field: 'uid' })
     UID: string
+
+    @Column({ field : 'nickname'})
+    NickName : string
+
+    @Column({ field : 'avatar'})
+    AvatarUrl : string
 }
 
 

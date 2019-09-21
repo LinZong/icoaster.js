@@ -63,7 +63,7 @@ class UserController extends ControllerBase {
   @Post('notify')
   @Authorize
   @Required(ParameterType.Body, [['Mobile', ValidatorFactory(MobileNotificationSetting)],
-  ['Coaster', ValidatorFactory(CoasterNotificationSetting)]])
+                                 ['Coaster', ValidatorFactory(CoasterNotificationSetting)]])
   async UpdateNotifyPolicy(ctx: ParameterizedContext) {
     const { Coaster, Mobile } = ctx.request.body
     ctx.body = await UserNotifySetting

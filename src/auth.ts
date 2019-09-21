@@ -8,7 +8,7 @@ const CreateToken = (payload: any) => {
    return jwtManager.sign(payload, Secret, {
         audience: Audience,
         issuer: Issuer,
-        expiresIn: 1800
+        expiresIn: 3600 * 24 * 2
     })
 }
 
