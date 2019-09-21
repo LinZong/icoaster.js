@@ -1,9 +1,11 @@
-import { safeTouch } from 'safe-touch'
-function touch<T>(param: T | any) {
-    return new Promise<T | any>((resolve, reject) => {
-        if (param) resolve(param)
-        else reject()
-    })
+import * as jwt from 'jsonwebtoken'
+
+export function ExtractBearerFromHeader(header : any) {
+    const token = header['authorization'].replace('Bearer ','')
+    return jwt.decode(token, {complete: true})
 }
 
-export { touch }
+export function GetUIDFromToken(header : any) : string {
+    const JwtObj = ExtractBearerFromHeader(header)
+    return JwtObj['payload']['UID']
+}

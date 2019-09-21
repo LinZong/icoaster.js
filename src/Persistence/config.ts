@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize-typescript'
 
-import UserAccount from './Model/UserAccount'
+import { UserAccount, UserBindDevice } from './Model/User'
 
 
 const { Database: { MySQL } } = require('../../app.json')
@@ -8,7 +8,7 @@ const { Database: { MySQL } } = require('../../app.json')
 const { UserName, Password, Host, Port, Database } = MySQL
 const sequelize = new Sequelize(Database, UserName, Password, {
     host: Host,
-    port:Port,
+    port: Port,
     dialect: 'mysql',
     pool: {
         max: 10,
@@ -16,7 +16,7 @@ const sequelize = new Sequelize(Database, UserName, Password, {
         idle: 30000
     }
 });
-sequelize.addModels([UserAccount])
+sequelize.addModels([UserAccount, UserBindDevice])
 
 console.log("Sequelize Loaded!")
 
