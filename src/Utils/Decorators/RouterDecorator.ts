@@ -7,7 +7,7 @@ const AUTHORIZE_ATTRIBUTE = "authorize"
 
 export class ControllerBase { }
 
-export interface IControllerBase { new(): IControllerBase }
+export interface IControllerBase { new(): ControllerBase }
 
 export interface RouteInfo {
   root: string,

@@ -13,7 +13,7 @@ function DefaultTest(test) {
 }
 
 const MatchParameters = (bag: ParameterType, namez: [string, ((test: any) => boolean)?][]) => async (ctx: ParameterizedContext, next) => {
-  let source: object
+  let source = {}
   switch (bag) {
     case ParameterType.QueryString: {
       source = ctx.query
@@ -36,7 +36,7 @@ const MatchParameters = (bag: ParameterType, namez: [string, ((test: any) => boo
   let matched = [], unmatched = []
   namez.forEach(([name, test]) => {
     test = test || DefaultTest
-    if (source[name] && test(source[name])) {
+    if (source.hasOwnProperty(name) && test(source[name])) {
       matched.push(name)
     }
     else {
