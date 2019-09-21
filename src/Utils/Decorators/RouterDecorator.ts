@@ -19,7 +19,7 @@ export interface RouteInfo {
 }
 
 // ------------- Helper ---------------
-function isConstructor(f: { new(...args: any[]): {} }) {
+export function isConstructor(f: { new(...args: any[]): {} }) {
   try {
     new f();
   } catch (err) {
@@ -34,7 +34,7 @@ function isFunction(f: any) {
 
 const SubPathMapptingFactory = (method: string) => (path: string): MethodDecorator => {
   return (target, propertyKey, descriptor) => {
-    Reflect.defineMetadata(PATH_ATTRIBUTE, ResovlePath(path), descriptor.value)
+    Reflect.defineMetadata(PATH_ATTRIBUTE, ResolvePath(path), descriptor.value)
     Reflect.defineMetadata(METHOD_ATTRIBUTE, method, descriptor.value)
   }
 }
@@ -45,12 +45,12 @@ const Authorize = (target, propertyKey, descriptor)  => {
 
 const [Get, Post, Put] = ['get', 'post', 'put'].map(it => SubPathMapptingFactory(it))
 
-const ResovlePath = (path: string) => path[0] === '/' ? path : `/${path}`
+const ResolvePath = (path: string) => path[0] === '/' ? path : `/${path}`
 
 // ------------- Decorator ---------------
 const Controller = (path: string): ClassDecorator => {
   return target => {
-    Reflect.defineMetadata(PATH_ATTRIBUTE, ResovlePath(path), target)
+    Reflect.defineMetadata(PATH_ATTRIBUTE, ResolvePath(path), target)
   }
 }
 

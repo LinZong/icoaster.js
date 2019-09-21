@@ -1,5 +1,4 @@
 import * as jwt from 'jsonwebtoken'
-
 export function ExtractBearerFromHeader(header : any) {
     const token = header['authorization'].replace('Bearer ','')
     return jwt.decode(token, {complete: true})

@@ -16,7 +16,7 @@ const MatchParameters = (bag: ParameterType, namez: [string, ((test: any) => boo
   let source = {}
   switch (bag) {
     case ParameterType.QueryString: {
-      source = ctx.query
+      source = {...ctx.query}
       break
     }
     case ParameterType.Body: {

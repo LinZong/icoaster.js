@@ -11,11 +11,24 @@ const app = new KoaWithRouter()
 
 app.use(async (ctx,next) => {
     // Log out all requests
-    await next()
     console.log(`${ctx.method} => ${ctx.url}`)
+    await next()
 })
 app.use(bodyParser())
 app.use(cors())
+
+app.use(async (ctx,next) => {
+    try {
+        await next()
+    }
+    catch (err) {
+        console.log(`Global error handler - ${err}`)
+        ctx.body = {
+            StatusCode : -1000, 
+            Error : err
+        }
+    }
+})
 
 app.LoadRouters(DiscoveryAllController())
 

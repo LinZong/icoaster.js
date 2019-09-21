@@ -1,9 +1,10 @@
-import { GetUIDFromToken } from '../Utils/common'
 import * as UserService from '../Service/user'
 import axios from 'axios'
-import { ControllerBase, Controller, Get, Authorize, Post } from '../Utils/Decorators/RouterDecorator';
+import { ControllerBase, Controller, Get, Post, isConstructor, Authorize } from '../Utils/Decorators/RouterDecorator';
 import { ParameterizedContext } from 'koa';
 import { Required, ParameterType } from '../Utils/Decorators/ParameterValidatorDecorator';
+import { INotificationSetting, UserNotifySetting, MobileNotificationSetting, CoasterNotificationSetting, UserProfile } from '../Persistence/Model/User'
+import { GetUIDFromToken } from '../Utils/common';
 const AppConfig = require('../../app.json')
 const Code2SessionUrl = (AppID: string, AppSecret: string, code: string | any): string => `https://api.weixin.qq.com/sns/jscode2session?appid=${AppID}&secret=${AppSecret}&js_code=${code}&grant_type=authorization_code`
 
@@ -27,7 +28,7 @@ class UserController extends ControllerBase {
           ctx.body = { ErrCode: errcode, Reason: errmsg }
           return
         }
-        
+
         ctx.body = await UserService.Login(openid, session_key)
       }
     }
@@ -37,27 +38,91 @@ class UserController extends ControllerBase {
     }
   }
 
-  @Post('bind')
-  @Required(ParameterType.Body, [['did'], ['type', (test) => [0, 1].includes(test)]])
-  async BindDevice(ctx: ParameterizedContext) {
+
+  @Get('notify')
+  @Authorize
+  async GetNotifyPolicy(ctx: ParameterizedContext) {
+
+    ctx.body = await UserNotifySetting
+      .findByPk(GetUIDFromToken(ctx.header))
+      .then(found => {
+        return {
+          StatusCode: found ? 0 : -1,
+          Mobile: found.MobileMask,
+          Coaster: found.CoasterMask
+        }
+      })
+      .catch(err => {
+        console.error(err)
+        return {
+          StatusCode: -2
+        }
+      })
+  }
+
+  @Post('notify')
+  @Authorize
+  @Required(ParameterType.Body, [['Mobile', ValidatorFactory(MobileNotificationSetting)],
+  ['Coaster', ValidatorFactory(CoasterNotificationSetting)]])
+  async UpdateNotifyPolicy(ctx: ParameterizedContext) {
+    const { Coaster, Mobile } = ctx.request.body
+    ctx.body = await UserNotifySetting
+      .upsert({
+        UID: GetUIDFromToken(ctx.header),
+        CoasterMask: Coaster,
+        MobileMask: Mobile
+      })
+      .thenReturn({
+        StatusCode: 0
+      })
+      .catch(err => {
+        console.error(`${this.UpdateNotifyPolicy.name} - ${err}`)
+        return {
+          StatusCode: -1
+        }
+      })
+  }
+
+  @Get('profile')
+  @Authorize
+  async GetUserProfile(ctx: ParameterizedContext) {
     const UID = GetUIDFromToken(ctx.header)
-    const { did, type } = ctx.request.body
-    ctx.body = await UserService.BindDevice(UID, did, type)
+    ctx.body = await UserProfile.findByPk(UID)
+      .then(prof => {
+        if (prof) {
+          const { Sex, Birthday, Height, Weight, Healthy } = prof
+          return {
+            StatusCode: 0,
+            Sex, Birthday, Height, Weight, Healthy
+          }
+        }
+        return {
+          StatusCode: -1
+        }
+      })
   }
 
-  @Get('bind')
-  async GetBindDevice(ctx : ParameterizedContext) {
-    ctx.body =  await UserService.GetBindDevice(
-      GetUIDFromToken(ctx.header)
-    )
-  }
-
-  @Post('unbind')
-  @Required(ParameterType.Body,[['did']])
-  async UnbindDevice(ctx : ParameterizedContext) {
-    const { did } = ctx.request.body
-    ctx.body = await UserService.UnbindDevice(GetUIDFromToken(ctx.header),did)
+  @Post('profile')
+  @Authorize
+  @Required(ParameterType.Body, [['Sex'], ['Birthday'], ['Height'], ['Weight'], ['Healthy']])
+  async UpdateUserProfile(ctx: ParameterizedContext) {
+    const UID = GetUIDFromToken(ctx.header)
+    ctx.body = await UserProfile.upsert({ UID: UID, ...ctx.request.body })
+      .thenReturn({ StatusCode: 0 })
+      .catchReturn({ StatusCode: -1 })
   }
 }
+
+function ValidatorFactory(type: INotificationSetting) {
+  return function (settings): boolean {
+    const instance = new type()
+    const properties = Object.getOwnPropertyNames(instance).filter(it => !isConstructor(instance[it]))
+    for (const name of properties) {
+      if (!settings.hasOwnProperty(name)) return false
+    }
+    return true
+  }
+}
+
 
 export default UserController
