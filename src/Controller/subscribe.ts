@@ -1,9 +1,10 @@
-import { ControllerBase, Controller, Get, Authorize } from '../Utils/Decorators/RouterDecorator';
+import { ControllerBase, Controller, Get, Authorize, Post } from '../Utils/Decorators/RouterDecorator';
 import { Required, ParameterType } from '../Utils/Decorators/ParameterValidatorDecorator';
 import { ParameterizedContext } from 'koa';
 import { UserAccount } from '../Persistence/Model/User';
 import { GetUIDFromToken } from '../Utils/common';
 import { UserSubscribe, QuerySubscribeUser } from '../Persistence/Model/Subscribe';
+import { Transaction } from 'sequelize/types';
 
 
 
@@ -68,7 +69,6 @@ export default class SubscribeController extends ControllerBase {
       ctx.body = { StatusCode: -1 }
       return
     }
-    
     else {
       try {
         await UserSubscribe.upsert({
@@ -84,6 +84,46 @@ export default class SubscribeController extends ControllerBase {
         console.log(err)
         ctx.body = { StatusCode: -2 }
       }
+    }
+  }
+
+
+  @Post('editsubscribe')
+  @Authorize
+  @Required(ParameterType.Body, [['UID'], ['Tag'], ['IsEmergencyContact']])
+  async EditSubscribeUser(ctx: ParameterizedContext) {
+
+    let success = [], failed = []
+    const { UID, Tag, IsEmergencyContact } = ctx.request.body
+
+    const QueryCondition = { UID: GetUIDFromToken(ctx.header), SubscribeUserUID: UID }
+
+
+    const SubscribedUser = await UserSubscribe.findOne({ where: QueryCondition })
+    if (!SubscribedUser) {
+      failed.push({
+        UID: UID,
+        Reason: `You have not been subscribing user ${UID} yet.`
+      })
+    }
+
+    else {
+      try {
+        const [affect, records] = await UserSubscribe.sequelize.transaction(tr => {
+          return UserSubscribe.update({ Tag: Tag, IsEmergencyContact: IsEmergencyContact }, { where: QueryCondition, transaction : tr })
+        })
+        success.push(UID)
+      }
+      catch (err) {
+        failed.push({
+          UID:UID,
+          Reason:"Cannot update database."
+        })
+      }
+    }
+    ctx.body = {
+      success : success,
+      failed : failed
     }
   }
 }

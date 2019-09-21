@@ -8,8 +8,7 @@ export enum ParameterType {
 }
 
 function DefaultTest(test) {
-  if (test) return true
-  return false
+  return true
 }
 
 const MatchParameters = (bag: ParameterType, namez: [string, ((test: any) => boolean)?][]) => async (ctx: ParameterizedContext, next) => {
