@@ -111,7 +111,7 @@ class UserController extends ControllerBase {
       .thenReturn({ StatusCode: 0 })
       .catchReturn({ StatusCode: -1 })
   }
-}
+} 
 
 function ValidatorFactory(type: INotificationSetting) {
   return function (settings): boolean {
@@ -123,6 +123,5 @@ function ValidatorFactory(type: INotificationSetting) {
     return true
   }
 }
-
 
 export default UserController

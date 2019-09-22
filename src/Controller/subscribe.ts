@@ -81,7 +81,7 @@ export default class SubscribeController extends ControllerBase {
         ctx.body = { StatusCode: 0 }
       }
       catch (err) {
-        console.log(err)
+        console.error(err)
         ctx.body = { StatusCode: -2 }
       }
     }
@@ -109,21 +109,21 @@ export default class SubscribeController extends ControllerBase {
 
     else {
       try {
-        const [affect, records] = await UserSubscribe.sequelize.transaction(tr => {
-          return UserSubscribe.update({ Tag: Tag, IsEmergencyContact: IsEmergencyContact }, { where: QueryCondition, transaction : tr })
+        await UserSubscribe.sequelize.transaction(tr => {
+          return UserSubscribe.update({ Tag: Tag, IsEmergencyContact: IsEmergencyContact }, { where: QueryCondition, transaction: tr })
         })
         success.push(UID)
       }
       catch (err) {
         failed.push({
-          UID:UID,
-          Reason:"Cannot update database."
+          UID: UID,
+          Reason: "Cannot update database."
         })
       }
     }
     ctx.body = {
-      success : success,
-      failed : failed
+      success: success,
+      failed: failed
     }
   }
 }

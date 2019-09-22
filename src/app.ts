@@ -5,7 +5,8 @@ import * as cors from '@koa/cors'
 
 
 require('./auth')
-require('./Persistence/config')
+require('./Persistence/MongoConfig')
+require('./Persistence/MySqlConfig')
 
 const app = new KoaWithRouter()
 

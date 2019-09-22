@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize-typescript'
 
 import { UserAccount, UserBindDevice, UserNotifySetting, UserProfile } from './Model/User'
-import { UserSubscribe } from '../Persistence/Model/Subscribe'
+import { UserSubscribe } from './Model/Subscribe'
 
 const { Database: { MySQL } } = require('../../app.json')
 
