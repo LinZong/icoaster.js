@@ -1,37 +1,33 @@
-import * as Koa from 'koa'
 import * as KoaRouter from 'koa-router'
 import * as fs from 'fs'
 import * as path from 'path'
-import {JWTMiddleware} from './auth'
+import { JWTMiddleware } from './auth'
 import { ControllerBase, GetRouteAttribute } from './Utils/Decorators/RouterDecorator';
+import { App } from 'koa-websocket';
 
-class KoaWithRouter extends Koa {
-  LoadRouters(paths: KoaRouter[]) {
-    const router = new KoaRouter()
-    paths.forEach(it => router.use(it.routes()))
-    this.use(router.routes())
-  }
-}
+const rootDir = path.join(__dirname, 'Controller')
 
-function DiscoveryAllController() {
-  function JoinPath(...args: string[]) {
-    return path.join(__dirname, 'Controller', ...args)
+const fileExtReg = /(\.js$|\.ts$|\.tsx$)/
+
+function LoadRouters(app : App,walkingDir : string = rootDir) {
+
+  function JoinPath(walkingDir : string, file: string) {
+    return path.join(walkingDir,file)
   }
 
-  const result: KoaRouter[] = []
-  const fileExtReg = /(\.js$|\.ts$|\.tsx$)/;
-  const controllers = path.join(__dirname, 'Controller')
-  fs.readdirSync(controllers).forEach(fd => {
-
+  fs.readdirSync(walkingDir).forEach(fd => {
+    if(fs.statSync(JoinPath(walkingDir,fd)).isDirectory()) {
+      LoadRouters(app,path.join(rootDir,fd))
+      return
+    }
     if (!fileExtReg.test(fd)) return
-
-    const loadPath = JoinPath(fd)
+    const loadPath = JoinPath(walkingDir,fd)
     const controller = require(loadPath).default
     if (controller && controller.prototype instanceof ControllerBase) {
       // Begin extract router info from decorator
       const info = GetRouteAttribute(controller)
       if (info) {
-        const [rootPath, routeInfo] = info
+        const [rootPath, routeInfo,isWebsocket] = info
         const __router = new KoaRouter({ prefix: rootPath })
         routeInfo.forEach(r => {
           let fnList = [r.fn]
@@ -41,11 +37,13 @@ function DiscoveryAllController() {
 
           __router[r.method](r.subpath,...fnList)
         })
-        result.push(__router)
+
+        if(isWebsocket) app.ws.use(__router.routes() as any)
+        else app.use(__router.routes())
       }
     }
   })
-  return result
 }
 
-export { KoaWithRouter, DiscoveryAllController }
+
+export { LoadRouters }

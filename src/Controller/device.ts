@@ -3,6 +3,7 @@ import { Required, ParameterType } from "../Utils/Decorators/ParameterValidatorD
 import { ParameterizedContext } from 'koa';
 import { GetUIDFromToken } from '../Utils/common'
 import * as DeviceService from '../Service/device'
+import { RequestToBind } from "./Coaster/CoasterWebsocketController";
 
 @Controller("device")
 class DeviceController extends ControllerBase {
@@ -13,7 +14,7 @@ class DeviceController extends ControllerBase {
   async BindDevice(ctx: ParameterizedContext) {
     const UID = GetUIDFromToken(ctx.header)
     const { did, type } = ctx.request.body
-    ctx.body = await DeviceService.BindDevice(UID, did, type)
+    ctx.body = RequestToBind(did,UID)
   }
 
   @Get('bind')
