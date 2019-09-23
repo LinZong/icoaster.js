@@ -1,12 +1,15 @@
 import { ControllerBase, WsController, WebSocketPath } from "../../Utils/Decorators/RouterDecorator";
 import { MiddlewareContext } from 'koa-websocket'
-import { Required, ParameterType } from "../../Utils/Decorators/ParameterValidatorDecorator";
-import GetAES256GCMCipher from '../../Utils/AES256GCMCipher'
+import RedisClient from '../../Persistence/RedisConfig'
+import { TryParseJSON } from "../../Utils/common";
+import { CoasterUploadUserStatus, BindDevice } from "../../Service/device";
+
+
 const PrepareToBindConnectionPool = new Map<string, [MiddlewareContext<any>, NodeJS.Timeout]>()
 const PrepareToBindAliveDetector = new Map<string, number>()
-const FakeBindCollection = new Map<string, string>()
+const BindedCoasterConnection = new Map<string, string>()
 
-const { Encrypter, Decrypter } = GetAES256GCMCipher()
+
 
 function SetupWebsocketConnectionMaintainer(ctx: MiddlewareContext<any>, did: string) {
   return (aliveDetector: Map<string, number>, connectionPool: Map<string, [MiddlewareContext<any>, NodeJS.Timeout]>) => {
@@ -38,8 +41,6 @@ function SetupWebsocketConnectionMaintainer(ctx: MiddlewareContext<any>, did: st
 }
 
 
-
-
 @WsController('coaster')
 export default class CoasterWebsocketController extends ControllerBase {
 
@@ -58,6 +59,18 @@ export default class CoasterWebsocketController extends ControllerBase {
     }
 
     SetupWebsocketConnectionMaintainer(ctx, did)(PrepareToBindAliveDetector, PrepareToBindConnectionPool)
+
+    RedisClient.GET(did, (err, req) => {
+      if (err) console.warn(`${did} cannot get bind request in redis.`)
+      else if (req) {
+        const bindReq = req.split(':')
+        if (bindReq.length === 2 && bindReq[1] === '0') {
+
+          // 说明当前服务器上有Pending请求未处理，立即将此请求发往客户端。
+          RequestToBind(did, bindReq[0])
+        }
+      }
+    })
   }
 
   /*
@@ -87,7 +100,7 @@ export default class CoasterWebsocketController extends ControllerBase {
   */
   @WebSocketPath('report')
   async CoasterReportUsageData(ctx: MiddlewareContext<any>) {
-    const { did } = ctx.query
+    const { did, type } = ctx.query
     if (!this.ValidateDid(did)) {
       ctx.websocket.close()
       return
@@ -100,20 +113,20 @@ export default class CoasterWebsocketController extends ControllerBase {
           switch (message.cmd) {
             case 'bind':
               console.log(`User ${message.uid} is now bind to coaster ${did}`)
-              FakeBindCollection.set(did, message.uid)
+              BindedCoasterConnection.set(did, message.uid)
+              // BindDevice(message.uid,did,type)
               break
             case 'env':
             case 'drink':
-              const uid = FakeBindCollection.get(did)
+              const uid = BindedCoasterConnection.get(did)
               if (!uid) console.warn("Bind uid not found. Cannot decrypt data.")
               else {
-                const { encrypted, iv } = message
-                const strData = Decrypter(encrypted, did + uid, iv)
-                TryParseJSON(strData).then(msg => console.log(msg), fail => console.error("Cannot parse data to json."))
+                // Call device service to persist user status data.
+                CoasterUploadUserStatus(did, message)
               }
               break
           }
-        }, fail => console.warn("Not json data, ignore."))
+        }, err => console.warn(`${err}, Not json data, ignore.`))
     })
 
     ctx.websocket.on('close', () => {
@@ -125,18 +138,7 @@ export default class CoasterWebsocketController extends ControllerBase {
     // Place validating request logic here. Here are still a stub.
     return did && ['123456789123456739393', '654321'].includes(did)
   }
-}
 
-function TryParseJSON(text: string): Promise<any> {
-  return new Promise((resolve, reject) => {
-    try {
-      const data = JSON.parse(text)
-      resolve(data)
-    }
-    catch {
-      reject()
-    }
-  })
 }
 
 export function RequestToBind(did: string, uid: string) {
@@ -146,7 +148,15 @@ export function RequestToBind(did: string, uid: string) {
       cmd: 'bind',
       uid: uid
     }))
-    return 'Sent bind request to coaster.'
+    return {
+      StatusCode: 0 // 杯垫已经上线, 并且已成功发送绑定请求到杯垫
+    }
   }
-  return 'Coaster is still offline now.'
+  // 否则将绑定请求存入Redis，等待杯垫上线后马上就能获得。
+  // Pending bind request.
+  RedisClient.SET(did, `${uid}:0`, 'EX', 3 * 60)
+  return {
+    StatusCode: 1
+    // 杯垫不在线, 但是已经缓存3分钟请求到Redis, 当杯垫在3分钟以内上线就能立刻收到绑定请求
+  }
 }

@@ -23,6 +23,7 @@
     "moment": "^2.24.0",
     "mongoose": "^5.7.1",
     "mysql2": "^1.7.0",
+    "redis": "^2.8.0",
     "safe-touch": "^0.2.5",
     "sequelize": "^5.19.0"
   },
@@ -37,6 +38,7 @@
     "@types/mongoose": "^5.5.17",
     "@types/node": "^12.7.5",
     "@types/passport-jwt": "^3.0.2",
+    "@types/redis": "^2.8.13",
     "@types/validator": "^10.11.3",
     "nodemon": "^1.19.2",
     "reflect-metadata": "^0.1.13",

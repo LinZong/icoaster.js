@@ -410,8 +410,8 @@
         "signature": "f761c91419d0a89422a0004ef1a92929dd4d2d5e5c16758654d8b0467d1998c6"
       },
       "./src/utils/common.ts": {
-        "version": "456241d30d3f723500c7dbc6a558ecb7dfd60334387535bd333fdf286c631692",
-        "signature": "8459a37d07cb4679798ff1aea2c06d807aff24b680eb797e09b391ab830f838f"
+        "version": "8298df5a5e5c8529b8b8b8658e7a547bc643e1d05bef9c3b6859ffaa188716b0",
+        "signature": "a4ba62eae38bb52519c90ffe6aeeabf73cde7d699fae5aa3152d3a4e8d00942f"
       },
       "./node_modules/sequelize/types/lib/data-types.d.ts": {
         "version": "90f0eb36d6cca7e856726c478d061c40c869d184012e2912098269ffc904417f",
@@ -1025,25 +1025,33 @@
         "version": "e82998496491712b5806795c0f55a169b7ee8af84073876c02084d44c94b39b2",
         "signature": "4c22fe1d975f26a2f5f2a7d8085e5fb9ec383a326970b27b60244c0a12bca376"
       },
-      "./src/service/device.ts": {
-        "version": "d1a2b18859b9449e7429bdc7fd6d4690e2befd6a9236c60f77046d445b6e249a",
-        "signature": "5b8c1b1b26f3811d1f204afbfa28eb0304e85788c45bdb47392299f0705e5709"
-      },
       "./src/utils/aes256gcmcipher.ts": {
         "version": "8dfae30462f8ec8597b7ede95af91722b7ce8b938b19496eb68466afa03a058e",
         "signature": "48ff65a01e14d2502b87240e7f4a61519138fbaa79d9e56d12aa5e5c8d335f3b"
       },
-      "./src/controller/coaster/coasterwebsocketcontroller.ts": {
-        "version": "707e06ba719712baf4b8d5c1291aaf423c05c965359338698cf6ff78f5935cd1",
-        "signature": "24b73baeb80e7220beef63e4044decfb53391d987c5379eec67ca0ff140a4bff"
-      },
-      "./src/controller/device.ts": {
-        "version": "9c9f7fc13decb8ccc23b2c1e32fe56fe576e2e1496171e8487abb6a9f9b93b2f",
-        "signature": "c9c5c4aceb69a45225171cbdd7b753fada00c160d79abf6c8e6d92dfa38824f6"
-      },
       "./node_modules/moment/moment.d.ts": {
         "version": "d62fa6fe33566fa743b3d6715a1a2fe46e937ba9d2ba158563c5744315d438a7",
         "signature": "d62fa6fe33566fa743b3d6715a1a2fe46e937ba9d2ba158563c5744315d438a7"
+      },
+      "./node_modules/@types/redis/ts3.1/index.d.ts": {
+        "version": "0767c96cbf2050c5b5269227a9de88a1289777ddc63fc9fbe21d242371cbc39f",
+        "signature": "0767c96cbf2050c5b5269227a9de88a1289777ddc63fc9fbe21d242371cbc39f"
+      },
+      "./src/persistence/redisconfig.ts": {
+        "version": "acc0125a3582eefeb242522d7293921d3578ec724395301ad1377693dd052778",
+        "signature": "39e17565d93f00d7f81c6ea48a3b16b92b6a70e165442419edae6b1de09c5fd1"
+      },
+      "./src/service/device.ts": {
+        "version": "94809e7b22320703f4d47a24a12f11e61631e71b3da26f72a37a2a285b8b33db",
+        "signature": "9c372556d36a270b53d030b1423482b89faca36ce9d029a07497140e5cf44857"
+      },
+      "./src/controller/coaster/coasterwebsocketcontroller.ts": {
+        "version": "1970d87364648ca321b62fbbce747b9dd7e093bf0abcbb74368078b59d1c2dd7",
+        "signature": "8612f37e87e4ce6a3f07705735abe049846eee4df7e4f52c71e8340d07697cac"
+      },
+      "./src/controller/device.ts": {
+        "version": "94767639754ca88dc7bd58a0b6038e8fd3ecfe16be545f4819c1fb99cb243340",
+        "signature": "d1ef64995fb4437e2b31df02d42075ef5c93ba86debcb7ba1dc4da99a0198871"
       },
       "./node_modules/@types/bson/index.d.ts": {
         "version": "64118c8a43189b10dfe9d96a9478bcf7cd5b01c9d0f7838ee1454ece8a687253",
@@ -2647,21 +2655,42 @@
         "./node_modules/@types/node/util.d.ts",
         "./node_modules/@types/node/ts3.2/util.d.ts"
       ],
-      "./src/service/device.ts": [
-        "./src/persistence/model/user.ts",
+      "./src/utils/aes256gcmcipher.ts": [
+        "./node_modules/@types/node/crypto.d.ts",
         "./node_modules/@types/node/util.d.ts",
         "./node_modules/@types/node/ts3.2/util.d.ts"
       ],
-      "./src/utils/aes256gcmcipher.ts": [
-        "./node_modules/@types/node/crypto.d.ts",
+      "./node_modules/moment/moment.d.ts": [
+        "./node_modules/@types/node/util.d.ts",
+        "./node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "./node_modules/@types/redis/ts3.1/index.d.ts": [
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/stream.d.ts",
+        "./node_modules/@types/node/ts3.2/index.d.ts",
+        "./node_modules/@types/node/util.d.ts",
+        "./node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "./src/persistence/redisconfig.ts": [
+        "./node_modules/@types/redis/ts3.1/index.d.ts",
+        "./node_modules/@types/node/util.d.ts",
+        "./node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "./src/service/device.ts": [
+        "./src/persistence/model/user.ts",
+        "./src/utils/aes256gcmcipher.ts",
+        "./src/utils/common.ts",
+        "./node_modules/moment/moment.d.ts",
+        "./src/persistence/redisconfig.ts",
         "./node_modules/@types/node/util.d.ts",
         "./node_modules/@types/node/ts3.2/util.d.ts"
       ],
       "./src/controller/coaster/coasterwebsocketcontroller.ts": [
         "./src/utils/decorators/routerdecorator.ts",
         "./node_modules/@types/koa-websocket/index.d.ts",
-        "./src/utils/decorators/parametervalidatordecorator.ts",
-        "./src/utils/aes256gcmcipher.ts",
+        "./src/persistence/redisconfig.ts",
+        "./src/utils/common.ts",
+        "./src/service/device.ts",
         "./node_modules/@types/node/util.d.ts",
         "./node_modules/@types/node/ts3.2/util.d.ts"
       ],
@@ -2672,10 +2701,6 @@
         "./src/utils/common.ts",
         "./src/service/device.ts",
         "./src/controller/coaster/coasterwebsocketcontroller.ts",
-        "./node_modules/@types/node/util.d.ts",
-        "./node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "./node_modules/moment/moment.d.ts": [
         "./node_modules/@types/node/util.d.ts",
         "./node_modules/@types/node/ts3.2/util.d.ts"
       ],
@@ -4273,6 +4298,20 @@
       "./src/persistence/model/user.ts": [
         "./node_modules/sequelize-typescript/dist/index.d.ts"
       ],
+      "./node_modules/moment/moment.d.ts": [
+        "./node_modules/@types/node/util.d.ts",
+        "./node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "./node_modules/@types/redis/ts3.1/index.d.ts": [
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/stream.d.ts",
+        "./node_modules/@types/node/ts3.2/index.d.ts",
+        "./node_modules/@types/node/util.d.ts",
+        "./node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "./src/persistence/redisconfig.ts": [
+        "./node_modules/@types/redis/ts3.1/index.d.ts"
+      ],
       "./src/controller/coaster/coasterwebsocketcontroller.ts": [
         "./node_modules/@types/koa-websocket/index.d.ts",
         "./src/utils/decorators/routerdecorator.ts"
@@ -4280,10 +4319,6 @@
       "./src/controller/device.ts": [
         "./node_modules/@types/koa/index.d.ts",
         "./src/utils/decorators/routerdecorator.ts"
-      ],
-      "./node_modules/moment/moment.d.ts": [
-        "./node_modules/@types/node/util.d.ts",
-        "./node_modules/@types/node/ts3.2/util.d.ts"
       ],
       "./node_modules/@types/bson/index.d.ts": [
         "./node_modules/@types/node/ts3.2/index.d.ts",
@@ -4609,11 +4644,12 @@
       "./node_modules/sequelize-typescript/dist/index.d.ts",
       "./src/persistence/model/subscribe.ts",
       "./src/persistence/model/user.ts",
-      "./src/service/device.ts",
       "./src/utils/aes256gcmcipher.ts",
+      "./node_modules/moment/moment.d.ts",
+      "./node_modules/@types/redis/ts3.1/index.d.ts",
+      "./src/persistence/redisconfig.ts",
       "./src/controller/coaster/coasterwebsocketcontroller.ts",
       "./src/controller/device.ts",
-      "./node_modules/moment/moment.d.ts",
       "./node_modules/@types/bson/index.d.ts",
       "./node_modules/@types/mongodb/index.d.ts",
       "./node_modules/@types/mongoose/index.d.ts",
@@ -4630,7 +4666,8 @@
       "./src/service/history.ts",
       "./node_modules/@types/passport/index.d.ts",
       "./node_modules/@types/passport-strategy/index.d.ts",
-      "./node_modules/@types/passport-jwt/index.d.ts"
+      "./node_modules/@types/passport-jwt/index.d.ts",
+      "./src/service/device.ts"
     ]
   },
   "version": "3.6.3"
