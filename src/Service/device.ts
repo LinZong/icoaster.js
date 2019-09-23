@@ -2,11 +2,12 @@ import { UserBindDevice } from "../Persistence/Model/User";
 import GetAES256GCMCipher from "../Utils/AES256GCMCipher";
 import { TryParseJSON } from "../Utils/common";
 import moment = require("moment");
-import RedisClient from "../Persistence/RedisConfig";
+import Redis from "../Persistence/RedisConfig";
 
 const { Decrypter } = GetAES256GCMCipher()
+
 const CoasterUploadUserStatus = async (Did: string, Message: any) => {
-  const UID = GetDidBindUSer(Did)
+  const UID = await GetDidBindUser(Did)
   const { cmd, encrypted, iv } = Message
   // Discard messages which cannot be decrypted.
   if (encrypted && iv) {
@@ -27,21 +28,40 @@ const CoasterUploadUserStatus = async (Did: string, Message: any) => {
   }
 }
 
-const GetDidBindUSer = (did : string) : string => {
-  return '3ijdiz7hjxg'
+const GetDidBindUser = async (did: string) => {
+
+  try {
+    const cachedUser = await Redis.PromiseGet('bind:' + did)
+    if (cachedUser) return cachedUser
+  }
+  catch {
+    // Fall back to search in database.
+  }
+  const device = await UserBindDevice.findOne({ where: { DeviceID: did } })
+  Redis.SET('bind:' + did, device.UID, 'EX', 60 * 60 * 12)
+  return device.UID
 }
 
 const BindDevice = async (UID: string, Did: string, type: number) => {
-  await UserBindDevice.findOrCreate({
+  // 清除从前的绑定信息
+  Redis.DEL('bind:' + Did)
+
+  return await UserBindDevice.findOrCreate({
     where: {
       UID: UID
     },
     defaults: { UID: UID, DeviceID: Did, Type: type } as UserBindDevice
   }).then(async ([bind, created]) => {
-    if (created) RedisClient.DEL(Did)
+    if (created) {
+      Redis.DEL(Did)
+      return true
+    }
     else {
       console.log(`User ${UID} have been bind a coaster. Updating info.`)
-      await UserBindDevice.update({ DeviceID: Did, Type: type }, { where: { UID: UID } })
+      return await UserBindDevice.update({ DeviceID: Did, Type: type }, { where: { UID: UID } }).then(([affect, devices]) => {
+        if (affect === 1 && devices[0].UID === UID) return true
+        return false
+      })
     }
   })
 }
@@ -86,6 +106,9 @@ const UnbindDevice = async (UID: string, Did: string) => {
       where: condition
     });
     if (device) {
+      // 删除掉缓存中的用户关联信息
+      Redis.DEL('bind:' + Did)
+      // 告知杯垫已经被用户解绑, 返回可被发现状态。
       return await UserBindDevice.destroy({
         where: condition
       }).thenReturn({ StatusCode: 0 }).catchReturn({ StatusCode: -2 })

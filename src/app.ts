@@ -6,7 +6,7 @@ import * as Koa from 'koa'
 
 require('./auth')
 
-// require('./Persistence/MySqlConfig')
+require('./Persistence/MySqlConfig')
 
 const app = websockify(new Koa())
 

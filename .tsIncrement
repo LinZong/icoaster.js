@@ -406,7 +406,7 @@
         "signature": "b79cda8e2122af980fcb0bd09d0ecacdf6be4f38088d6d23818547c9ee31a38d"
       },
       "./src/app.ts": {
-        "version": "679f47304730110d7b8086b473882b6680bda8f820eecd6a9b5f7c92d6cfcfe4",
+        "version": "1c0e9381fcbc0ac85122788c06d8a10b6f102fa9bdd57b19713100cca1d2c1ed",
         "signature": "f761c91419d0a89422a0004ef1a92929dd4d2d5e5c16758654d8b0467d1998c6"
       },
       "./src/utils/common.ts": {
@@ -1037,21 +1037,25 @@
         "version": "0767c96cbf2050c5b5269227a9de88a1289777ddc63fc9fbe21d242371cbc39f",
         "signature": "0767c96cbf2050c5b5269227a9de88a1289777ddc63fc9fbe21d242371cbc39f"
       },
+      "./src/persistence/redisclientenhance.ts": {
+        "version": "91a26a5c7e2d17d27ed0980d9b675a69901b15720c897d163998333b4efddecf",
+        "signature": "4352e5a7d577c6aff3fa2943e49808881597d22fb5547d624bafc6a6a386bb0a"
+      },
       "./src/persistence/redisconfig.ts": {
-        "version": "acc0125a3582eefeb242522d7293921d3578ec724395301ad1377693dd052778",
-        "signature": "39e17565d93f00d7f81c6ea48a3b16b92b6a70e165442419edae6b1de09c5fd1"
+        "version": "d1395dd529243407fe61f12937e7ed2db497bf5b74a6b1bca0a807b6800c27de",
+        "signature": "0b0d9fddfee0c0a09dfd5c73fa8ca86246c87d68c065ac1e08f5074cdbeccbc4"
       },
       "./src/service/device.ts": {
-        "version": "94809e7b22320703f4d47a24a12f11e61631e71b3da26f72a37a2a285b8b33db",
-        "signature": "9c372556d36a270b53d030b1423482b89faca36ce9d029a07497140e5cf44857"
+        "version": "f249a02dfc66fba4d116145f4fee0dd564385e9cd4f0a75d03cbfeee92d145f6",
+        "signature": "272e497dec69c32eb4487cb1894aad2049e43d663010f75319faf76a6fdd5f6a"
       },
       "./src/controller/coaster/coasterwebsocketcontroller.ts": {
-        "version": "1600eb5f7b80e1cf914d79e1a6b0aa6194b59daf330619058c8dc901504e5428",
+        "version": "dda6da3bb21fe64b8e8e9fd84f6e8a4940475f9eddda582bd7bbc566ad33a716",
         "signature": "8612f37e87e4ce6a3f07705735abe049846eee4df7e4f52c71e8340d07697cac"
       },
       "./src/controller/device.ts": {
-        "version": "94767639754ca88dc7bd58a0b6038e8fd3ecfe16be545f4819c1fb99cb243340",
-        "signature": "d1ef64995fb4437e2b31df02d42075ef5c93ba86debcb7ba1dc4da99a0198871"
+        "version": "3e69cadec826fad47a00075561de622e89adf998470d2f52f7cec78836ddf80c",
+        "signature": "770dd2acd36d73b8ce1e8241b4dadcb5423beefcf486b16d3cdd77fbdd207ff4"
       },
       "./node_modules/@types/bson/index.d.ts": {
         "version": "64118c8a43189b10dfe9d96a9478bcf7cd5b01c9d0f7838ee1454ece8a687253",
@@ -2671,8 +2675,14 @@
         "./node_modules/@types/node/util.d.ts",
         "./node_modules/@types/node/ts3.2/util.d.ts"
       ],
+      "./src/persistence/redisclientenhance.ts": [
+        "./node_modules/@types/redis/ts3.1/index.d.ts",
+        "./node_modules/@types/node/util.d.ts",
+        "./node_modules/@types/node/ts3.2/util.d.ts"
+      ],
       "./src/persistence/redisconfig.ts": [
         "./node_modules/@types/redis/ts3.1/index.d.ts",
+        "./src/persistence/redisclientenhance.ts",
         "./node_modules/@types/node/util.d.ts",
         "./node_modules/@types/node/ts3.2/util.d.ts"
       ],
@@ -4309,8 +4319,11 @@
         "./node_modules/@types/node/util.d.ts",
         "./node_modules/@types/node/ts3.2/util.d.ts"
       ],
-      "./src/persistence/redisconfig.ts": [
+      "./src/persistence/redisclientenhance.ts": [
         "./node_modules/@types/redis/ts3.1/index.d.ts"
+      ],
+      "./src/persistence/redisconfig.ts": [
+        "./src/persistence/redisclientenhance.ts"
       ],
       "./src/controller/coaster/coasterwebsocketcontroller.ts": [
         "./node_modules/@types/koa-websocket/index.d.ts",
@@ -4647,6 +4660,7 @@
       "./src/utils/aes256gcmcipher.ts",
       "./node_modules/moment/moment.d.ts",
       "./node_modules/@types/redis/ts3.1/index.d.ts",
+      "./src/persistence/redisclientenhance.ts",
       "./src/persistence/redisconfig.ts",
       "./src/service/device.ts",
       "./src/controller/device.ts",
