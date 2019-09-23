@@ -1046,7 +1046,7 @@
         "signature": "9c372556d36a270b53d030b1423482b89faca36ce9d029a07497140e5cf44857"
       },
       "./src/controller/coaster/coasterwebsocketcontroller.ts": {
-        "version": "1970d87364648ca321b62fbbce747b9dd7e093bf0abcbb74368078b59d1c2dd7",
+        "version": "1600eb5f7b80e1cf914d79e1a6b0aa6194b59daf330619058c8dc901504e5428",
         "signature": "8612f37e87e4ce6a3f07705735abe049846eee4df7e4f52c71e8340d07697cac"
       },
       "./src/controller/device.ts": {
@@ -4648,7 +4648,7 @@
       "./node_modules/moment/moment.d.ts",
       "./node_modules/@types/redis/ts3.1/index.d.ts",
       "./src/persistence/redisconfig.ts",
-      "./src/controller/coaster/coasterwebsocketcontroller.ts",
+      "./src/service/device.ts",
       "./src/controller/device.ts",
       "./node_modules/@types/bson/index.d.ts",
       "./node_modules/@types/mongodb/index.d.ts",
@@ -4667,7 +4667,7 @@
       "./node_modules/@types/passport/index.d.ts",
       "./node_modules/@types/passport-strategy/index.d.ts",
       "./node_modules/@types/passport-jwt/index.d.ts",
-      "./src/service/device.ts"
+      "./src/controller/coaster/coasterwebsocketcontroller.ts"
     ]
   },
   "version": "3.6.3"

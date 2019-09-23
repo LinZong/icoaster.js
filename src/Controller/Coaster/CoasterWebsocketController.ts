@@ -114,6 +114,7 @@ export default class CoasterWebsocketController extends ControllerBase {
             case 'bind':
               console.log(`User ${message.uid} is now bind to coaster ${did}`)
               BindedCoasterConnection.set(did, message.uid)
+              RedisClient.DEL(did)
               // BindDevice(message.uid,did,type)
               break
             case 'env':
