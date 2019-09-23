@@ -1,4 +1,4 @@
-import { Document, Schema, Model } from "mongoose";
+import { Document, Schema } from "mongoose";
 import mongoose from '../MongoConfig'
 export interface IDrinkingRecords extends Document {
     Time: number,

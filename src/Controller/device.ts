@@ -3,7 +3,7 @@ import { Required, ParameterType } from "../Utils/Decorators/ParameterValidatorD
 import { ParameterizedContext } from 'koa';
 import { GetUIDFromToken } from '../Utils/common'
 import * as DeviceService from '../Service/device'
-import { RequestToBind } from "./Coaster/CoasterWebsocketController";
+import { RequestToBind, RequestUnbind } from "./Coaster/CoasterWebsocketController";
 
 @Controller("device")
 class DeviceController extends ControllerBase {
@@ -40,7 +40,7 @@ class DeviceController extends ControllerBase {
   @Required(ParameterType.QueryString, [['did']])
   async UnbindDevice(ctx: ParameterizedContext) {
     const { did } = ctx.query
-    ctx.body = await DeviceService.UnbindDevice(GetUIDFromToken(ctx.header), did)
+    ctx.body = await RequestUnbind(did)
   }
 }
 

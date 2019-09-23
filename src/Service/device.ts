@@ -3,7 +3,7 @@ import GetAES256GCMCipher from "../Utils/AES256GCMCipher";
 import { TryParseJSON } from "../Utils/common";
 import moment = require("moment");
 import Redis from "../Persistence/RedisConfig";
-
+import Environments from '../Persistence/Model/Envrionments'
 const { Decrypter } = GetAES256GCMCipher()
 
 const CoasterUploadUserStatus = async (Did: string, Message: any) => {
@@ -16,20 +16,43 @@ const CoasterUploadUserStatus = async (Did: string, Message: any) => {
     TryParseJSON(data).then(obj => {
       switch (cmd) {
         case 'env':
-          const { wet, temp } = obj
+          const { Wet, Temp } = obj
           // Persist that data to db.
-          console.log(`Environment data: ${wet}, ${temp}`)
+          console.log(`Environment data: ${Wet}, ${Temp}`)
+          SaveEnvrionmentReport(UID, {
+            Time : now,
+            Wet: Wet,
+            Temp: Temp
+          })
           break
         case 'drink':
-          const { vol } = obj
+          SaveDrinkingRecord(UID, {
+            Time : now,
+            ...obj
+          })
           break
       }
     })
   }
 }
 
-const GetDidBindUser = async (did: string) => {
+const SaveDrinkingRecord = async (UID: string, Record: any) => {
+  await Environments.updateOne({ UID: UID }, {
+    $push: {
+      records: Record
+    }
+  }, { upsert: true })
+}
 
+const SaveEnvrionmentReport = async (UID: string, Report: any) => {
+  await Environments.updateOne({ UID: UID }, {
+    $push: {
+      records: Report
+    }
+  }, { upsert: true })
+}
+
+const GetDidBindUser = async (did: string) => {
   try {
     const cachedUser = await Redis.PromiseGet('bind:' + did)
     if (cachedUser) return cachedUser
@@ -87,7 +110,13 @@ const GetBoundDevice = async (UID: string) => {
     })
 }
 
-const UnbindDevice = async (UID: string, Did: string) => {
+const DetectIfDidIsBound = async(Did : string) => {
+  return await UserBindDevice.findOne({where : { DeviceID : Did}})
+}
+
+const UnbindDevice = async (Did: string,authUser? : string) => {
+  const UID = await GetDidBindUser(Did)
+  if(authUser && authUser !== UID) return { StatusCode : -3 }
   // 0 正常完成, -1 没有绑定杯垫， -2 数据库读写错误.
   const condition = {
     UID: UID,
@@ -122,4 +151,4 @@ const UnbindDevice = async (UID: string, Did: string) => {
   }
 }
 
-export { BindDevice, GetBoundDevice, UnbindDevice, CoasterUploadUserStatus }
+export { DetectIfDidIsBound, BindDevice, GetBoundDevice, UnbindDevice, CoasterUploadUserStatus }

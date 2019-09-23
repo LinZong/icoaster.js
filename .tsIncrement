@@ -1045,18 +1045,6 @@
         "version": "d1395dd529243407fe61f12937e7ed2db497bf5b74a6b1bca0a807b6800c27de",
         "signature": "0b0d9fddfee0c0a09dfd5c73fa8ca86246c87d68c065ac1e08f5074cdbeccbc4"
       },
-      "./src/service/device.ts": {
-        "version": "f249a02dfc66fba4d116145f4fee0dd564385e9cd4f0a75d03cbfeee92d145f6",
-        "signature": "272e497dec69c32eb4487cb1894aad2049e43d663010f75319faf76a6fdd5f6a"
-      },
-      "./src/controller/coaster/coasterwebsocketcontroller.ts": {
-        "version": "dda6da3bb21fe64b8e8e9fd84f6e8a4940475f9eddda582bd7bbc566ad33a716",
-        "signature": "8612f37e87e4ce6a3f07705735abe049846eee4df7e4f52c71e8340d07697cac"
-      },
-      "./src/controller/device.ts": {
-        "version": "3e69cadec826fad47a00075561de622e89adf998470d2f52f7cec78836ddf80c",
-        "signature": "770dd2acd36d73b8ce1e8241b4dadcb5423beefcf486b16d3cdd77fbdd207ff4"
-      },
       "./node_modules/@types/bson/index.d.ts": {
         "version": "64118c8a43189b10dfe9d96a9478bcf7cd5b01c9d0f7838ee1454ece8a687253",
         "signature": "64118c8a43189b10dfe9d96a9478bcf7cd5b01c9d0f7838ee1454ece8a687253"
@@ -1073,9 +1061,25 @@
         "version": "d8d376e1e9f72c1e3a96f3d782ecd81d9e08823d9ae1dedaac4b5186704fbaeb",
         "signature": "cca67a77464e1e26dccffe14a18e67956dbc3bb56e72464a9758764d63ec668b"
       },
+      "./src/persistence/model/envrionments.ts": {
+        "version": "d4f7f1e85d20896749c5edb92026e1830945d7ebeb38dfe5661a376dab4f1cec",
+        "signature": "bca7dae03a03d2a9f8dfa5c22a825fb24cd88daaa5a89e26a6aef1d20bf2f5d5"
+      },
+      "./src/service/device.ts": {
+        "version": "f95f8c5372000fbaf27576b5a35615abd73b4f6106013fea6a93d9ddaef208da",
+        "signature": "e07ce61e825e420f323b8f2349276113f58c616e9397d0ef6b4c92ebdbe9a696"
+      },
+      "./src/controller/coaster/coasterwebsocketcontroller.ts": {
+        "version": "26d13c07b444f8baf3309a26562870902507271bd8442240b043815e719a2710",
+        "signature": "3ac893b88f12aec70361910adb66e63cb9216e8c2d8e90aa51defd02fe76fb5c"
+      },
+      "./src/controller/device.ts": {
+        "version": "d81ef65c084de0de1c480b71a07eefe0392b9e798912ad4b79a907ec314f8b84",
+        "signature": "770dd2acd36d73b8ce1e8241b4dadcb5423beefcf486b16d3cdd77fbdd207ff4"
+      },
       "./src/persistence/model/drinkingrecords.ts": {
-        "version": "c0f3e781d5c80adb1fde6fa8398e76897c7d283a2634fd8281a5ff4dd3a09003",
-        "signature": "1eb0b9ae9e99e2137e2ecde5e6f1bb6ff79683be33c6bae9c3cb08def1ea75a0"
+        "version": "01ca3d3ef9c6b5c8cf1c5b7b3a9091a99baf7251e168d8c37ed0eeda1351336e",
+        "signature": "2e9a31d5ac5da91db21e98a398288368ae5cefd7821231878e541b8fa2f2f21a"
       },
       "./src/service/drinking.ts": {
         "version": "d88ea8db2fc185c950316cb8f50378ebc895e73e45071d7c577e8237ad2d1499",
@@ -2686,34 +2690,6 @@
         "./node_modules/@types/node/util.d.ts",
         "./node_modules/@types/node/ts3.2/util.d.ts"
       ],
-      "./src/service/device.ts": [
-        "./src/persistence/model/user.ts",
-        "./src/utils/aes256gcmcipher.ts",
-        "./src/utils/common.ts",
-        "./node_modules/moment/moment.d.ts",
-        "./src/persistence/redisconfig.ts",
-        "./node_modules/@types/node/util.d.ts",
-        "./node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "./src/controller/coaster/coasterwebsocketcontroller.ts": [
-        "./src/utils/decorators/routerdecorator.ts",
-        "./node_modules/@types/koa-websocket/index.d.ts",
-        "./src/persistence/redisconfig.ts",
-        "./src/utils/common.ts",
-        "./src/service/device.ts",
-        "./node_modules/@types/node/util.d.ts",
-        "./node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "./src/controller/device.ts": [
-        "./src/utils/decorators/routerdecorator.ts",
-        "./src/utils/decorators/parametervalidatordecorator.ts",
-        "./node_modules/@types/koa/index.d.ts",
-        "./src/utils/common.ts",
-        "./src/service/device.ts",
-        "./src/controller/coaster/coasterwebsocketcontroller.ts",
-        "./node_modules/@types/node/util.d.ts",
-        "./node_modules/@types/node/ts3.2/util.d.ts"
-      ],
       "./node_modules/@types/bson/index.d.ts": [
         "./node_modules/@types/node/ts3.2/index.d.ts",
         "./node_modules/@types/node/util.d.ts",
@@ -2739,6 +2715,41 @@
       ],
       "./src/persistence/mongoconfig.ts": [
         "./node_modules/@types/mongoose/index.d.ts",
+        "./node_modules/@types/node/util.d.ts",
+        "./node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "./src/persistence/model/envrionments.ts": [
+        "./node_modules/@types/mongoose/index.d.ts",
+        "./src/persistence/mongoconfig.ts",
+        "./node_modules/@types/node/util.d.ts",
+        "./node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "./src/service/device.ts": [
+        "./src/persistence/model/user.ts",
+        "./src/utils/aes256gcmcipher.ts",
+        "./src/utils/common.ts",
+        "./node_modules/moment/moment.d.ts",
+        "./src/persistence/redisconfig.ts",
+        "./src/persistence/model/envrionments.ts",
+        "./node_modules/@types/node/util.d.ts",
+        "./node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "./src/controller/coaster/coasterwebsocketcontroller.ts": [
+        "./src/utils/decorators/routerdecorator.ts",
+        "./node_modules/@types/koa-websocket/index.d.ts",
+        "./src/persistence/redisconfig.ts",
+        "./src/utils/common.ts",
+        "./src/service/device.ts",
+        "./node_modules/@types/node/util.d.ts",
+        "./node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "./src/controller/device.ts": [
+        "./src/utils/decorators/routerdecorator.ts",
+        "./src/utils/decorators/parametervalidatordecorator.ts",
+        "./node_modules/@types/koa/index.d.ts",
+        "./src/utils/common.ts",
+        "./src/service/device.ts",
+        "./src/controller/coaster/coasterwebsocketcontroller.ts",
         "./node_modules/@types/node/util.d.ts",
         "./node_modules/@types/node/ts3.2/util.d.ts"
       ],
@@ -4325,14 +4336,6 @@
       "./src/persistence/redisconfig.ts": [
         "./src/persistence/redisclientenhance.ts"
       ],
-      "./src/controller/coaster/coasterwebsocketcontroller.ts": [
-        "./node_modules/@types/koa-websocket/index.d.ts",
-        "./src/utils/decorators/routerdecorator.ts"
-      ],
-      "./src/controller/device.ts": [
-        "./node_modules/@types/koa/index.d.ts",
-        "./src/utils/decorators/routerdecorator.ts"
-      ],
       "./node_modules/@types/bson/index.d.ts": [
         "./node_modules/@types/node/ts3.2/index.d.ts",
         "./node_modules/@types/node/util.d.ts",
@@ -4358,6 +4361,20 @@
       ],
       "./src/persistence/mongoconfig.ts": [
         "./node_modules/@types/mongoose/index.d.ts"
+      ],
+      "./src/persistence/model/envrionments.ts": [
+        "./node_modules/@types/mongoose/index.d.ts"
+      ],
+      "./src/service/device.ts": [
+        "./src/persistence/model/user.ts"
+      ],
+      "./src/controller/coaster/coasterwebsocketcontroller.ts": [
+        "./node_modules/@types/koa-websocket/index.d.ts",
+        "./src/utils/decorators/routerdecorator.ts"
+      ],
+      "./src/controller/device.ts": [
+        "./node_modules/@types/koa/index.d.ts",
+        "./src/utils/decorators/routerdecorator.ts"
       ],
       "./src/persistence/model/drinkingrecords.ts": [
         "./node_modules/@types/mongoose/index.d.ts"
@@ -4662,12 +4679,13 @@
       "./node_modules/@types/redis/ts3.1/index.d.ts",
       "./src/persistence/redisclientenhance.ts",
       "./src/persistence/redisconfig.ts",
-      "./src/service/device.ts",
-      "./src/controller/device.ts",
       "./node_modules/@types/bson/index.d.ts",
       "./node_modules/@types/mongodb/index.d.ts",
       "./node_modules/@types/mongoose/index.d.ts",
       "./src/persistence/mongoconfig.ts",
+      "./src/persistence/model/envrionments.ts",
+      "./src/service/device.ts",
+      "./src/controller/device.ts",
       "./src/persistence/model/drinkingrecords.ts",
       "./src/service/drinking.ts",
       "./src/controller/drinking.ts",

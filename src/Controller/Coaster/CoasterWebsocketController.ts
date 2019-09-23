@@ -2,12 +2,13 @@ import { ControllerBase, WsController, WebSocketPath } from "../../Utils/Decorat
 import { MiddlewareContext } from 'koa-websocket'
 import client from '../../Persistence/RedisConfig'
 import { TryParseJSON } from "../../Utils/common";
-import { CoasterUploadUserStatus, BindDevice } from "../../Service/device";
+import { CoasterUploadUserStatus, BindDevice, UnbindDevice, DetectIfDidIsBound } from "../../Service/device";
 
 
 const PrepareToBindConnectionPool = new Map<string, [MiddlewareContext<any>, NodeJS.Timeout]>()
 const PrepareToBindAliveDetector = new Map<string, number>()
-const BindedCoasterConnection = new Map<string, string>()
+const BindedCoasterWithUser = new Map<string, string>()
+const BindedCoasterConnection = new Map<string, MiddlewareContext<any>>()
 
 
 function SetupWebsocketConnectionMaintainer(ctx: MiddlewareContext<any>, did: string) {
@@ -100,11 +101,18 @@ export default class CoasterWebsocketController extends ControllerBase {
   @WebSocketPath('report')
   async CoasterReportUsageData(ctx: MiddlewareContext<any>) {
     const { did, type } = ctx.query
-    if (!this.ValidateDid(did)) {
-      ctx.websocket.close()
-      return
-    }
+    ctx.websocket.on('open', () => {
+      if (!this.ValidateDid(did)) {
+        ctx.websocket.close()
+        return
+      }
 
+      if (!DetectIfDidIsBound(did)) {
+        console.warn("此杯垫没有绑定任何用户, 立刻关闭连接.")
+
+        ctx.websocket.close(1000, "Haven't bound any user, should not connect to this api.")
+      }
+    })
     ctx.websocket.on('message', (coasterData) => {
       // 做data的iv向量解密
       TryParseJSON(coasterData.toString())
@@ -114,15 +122,18 @@ export default class CoasterWebsocketController extends ControllerBase {
               console.log(`User ${message.uid} is now bind to coaster ${did}`)
               const PersistBindRelationship = await BindDevice(message.uid, did, type)
               if (PersistBindRelationship) {
-                BindedCoasterConnection.set(did, message.uid)
+                this.AddToConnectionPool(did, message.uid, ctx)
                 console.log(`杯垫 ${did} 与用户 ${message.uid} 成功完成绑定!`)
                 ctx.websocket.send(JSON.stringify({
                   cmd: "bound"
                 }))
               }
               break
+            case 'unbound':
+              this.RemoveFromConnectionPool(did)
+              await UnbindDevice(did)
             default:
-              const uid = BindedCoasterConnection.get(did)
+              const uid = BindedCoasterWithUser.get(did)
               if (!uid) console.warn("Bind uid not found. Cannot decrypt data.")
               else {
                 // Call device service to persist user status data.
@@ -141,6 +152,16 @@ export default class CoasterWebsocketController extends ControllerBase {
   ValidateDid(did: string) {
     // Place validating request logic here. Here are still a stub.
     return did && did.length === 21
+  }
+
+  AddToConnectionPool(did : string, uid : string, ctx : MiddlewareContext<any>) {
+    BindedCoasterWithUser.set(did, uid)
+    BindedCoasterConnection.set(did,ctx)
+  }
+
+  RemoveFromConnectionPool(did : string) {
+    BindedCoasterConnection.delete(did)
+    BindedCoasterWithUser.delete(did)
   }
 }
 
@@ -161,5 +182,23 @@ export function RequestToBind(did: string, uid: string) {
   return {
     StatusCode: 1
     // 杯垫不在线, 但是已经缓存3分钟请求到Redis, 当杯垫在3分钟以内上线就能立刻收到绑定请求
+  }
+}
+
+export async function RequestUnbind(did : string) {
+  const remoteCtx = BindedCoasterConnection.get(did)
+  await UnbindDevice(did)
+  
+  if (remoteCtx) {
+    remoteCtx.websocket.send(JSON.stringify({
+      cmd: 'unbind'
+    }))
+
+    return {
+      StatusCode : 0
+    }
+  }
+  return {
+    StatusCode : 1
   }
 }
