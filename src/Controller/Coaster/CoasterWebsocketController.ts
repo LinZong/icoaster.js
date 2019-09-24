@@ -103,7 +103,7 @@ export default class CoasterWebsocketController extends ControllerBase {
     const { did, type } = ctx.query
 
     if (!this.ValidateDid(did)) {
-      ctx.websocket.close()
+      ctx.websocket.close(1001)
       return
     }
 
@@ -115,21 +115,18 @@ export default class CoasterWebsocketController extends ControllerBase {
             case 'bind':
               const PersistBindRelationship = await BindDevice(message.uid, did, type)
               if (PersistBindRelationship) {
-                this.AddToConnectionPool(did, message.uid, ctx)
                 console.log(`杯垫 ${did} 与用户 ${message.uid} 成功完成绑定!`)
-                ctx.websocket.send(JSON.stringify({
-                  cmd: "bound"
-                }))
+
+                // 保存连接到ConnectionPool, 应答客户端，告知客户端可以开始发送状态数据。
+                this.FinishConnectionHandshake(did, message.uid, ctx)
               }
               break
             case 'bound':
               const IsBound = await DetectIfDidIsBound(did)
-              if (!IsBound) ctx.websocket.close(1000, 'Not bound. Close immediately.')
-              else {
-                ctx.websocket.send(JSON.stringify({
-                  cmd: "bound"
-                }))
-              }
+              if (!IsBound)
+                ctx.websocket.close(1002, 'Not bound. Close immediately.')
+              else
+                this.FinishConnectionHandshake(did, IsBound.UID, ctx)
               break
             case 'unbound':
               this.RemoveFromConnectionPool(did)
@@ -156,15 +153,23 @@ export default class CoasterWebsocketController extends ControllerBase {
     return did && did.length === 21
   }
 
-  AddToConnectionPool(did : string, uid : string, ctx : MiddlewareContext<any>) {
+  AddToConnectionPool(did: string, uid: string, ctx: MiddlewareContext<any>) {
     BindedCoasterWithUser.set(did, uid)
-    BindedCoasterConnection.set(did,ctx)
+    BindedCoasterConnection.set(did, ctx)
   }
 
-  RemoveFromConnectionPool(did : string) {
+  RemoveFromConnectionPool(did: string) {
     BindedCoasterConnection.delete(did)
     BindedCoasterWithUser.delete(did)
   }
+
+  FinishConnectionHandshake(did: string, uid: string, ctx: MiddlewareContext<any>) {
+    this.AddToConnectionPool(did, uid, ctx)
+    ctx.websocket.send(JSON.stringify({
+      cmd: "bound"
+    }))
+  }
+
 }
 
 export function RequestBind(did: string, uid: string) {
@@ -187,7 +192,7 @@ export function RequestBind(did: string, uid: string) {
   }
 }
 
-export async function RequestUnbind(did : string) {
+export async function RequestUnbind(did: string) {
   const remoteCtx = BindedCoasterConnection.get(did)
   await UnbindDevice(did)
 
@@ -195,12 +200,7 @@ export async function RequestUnbind(did : string) {
     remoteCtx.websocket.send(JSON.stringify({
       cmd: 'unbind'
     }))
-
-    return {
-      StatusCode : 0
-    }
+    return { StatusCode: 0 }
   }
-  return {
-    StatusCode : 1
-  }
+  return { StatusCode: 1 }
 }

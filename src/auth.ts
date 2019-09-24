@@ -1,10 +1,14 @@
 import * as jwt from 'koa-jwt'
 import * as jwtManager from 'jsonwebtoken'
-const { JWT: { Secret, Audience, Issuer } } = require('../app.json')
+const { JWT: { Secret, Audience, Issuer } } = require('./config-loader')
 
 const JWTMiddleware = jwt({ secret: Secret, issuer: Issuer, audience: Audience})
 
-const CreateToken = (payload: any) => {
+export interface TokenPayload {
+    UID : string
+}
+
+const CreateToken = (payload: TokenPayload) => {
    return jwtManager.sign(payload, Secret, {
         audience: Audience,
         issuer: Issuer,

@@ -3,7 +3,7 @@ import { Sequelize } from 'sequelize-typescript'
 import { UserAccount, UserBindDevice, UserNotifySetting, UserProfile } from './Model/User'
 import { UserSubscribe } from './Model/Subscribe'
 
-const { Database: { MySQL } } = require('../../app.json')
+const { Database: { MySQL } } = require('../config-loader')
 
 const { UserName, Password, Host, Port, Database } = MySQL
 const sequelize = new Sequelize(Database, UserName, Password, {

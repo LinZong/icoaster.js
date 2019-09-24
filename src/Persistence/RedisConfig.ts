@@ -1,6 +1,6 @@
 import * as redis from 'redis'
 import { WithPromise } from './RedisClientEnhance';
-const { Database: { Redis } } = require('../../app.json')
+const { Database: { Redis } } = require('../config-loader')
 const client = redis.createClient(Redis)
     .once('ready', console.log.bind(console, 'Redis connected!'))
 

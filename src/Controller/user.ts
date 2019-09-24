@@ -5,7 +5,8 @@ import { ParameterizedContext } from 'koa';
 import { Required, ParameterType } from '../Utils/Decorators/ParameterValidatorDecorator';
 import { INotificationSetting, UserNotifySetting, MobileNotificationSetting, CoasterNotificationSetting, UserProfile } from '../Persistence/Model/User'
 import { GetUIDFromToken } from '../Utils/common';
-const AppConfig = require('../../app.json')
+import { CreateToken } from '../auth';
+const AppConfig = require('../config-loader')
 const Code2SessionUrl = (AppID: string, AppSecret: string, code: string | any): string => `https://api.weixin.qq.com/sns/jscode2session?appid=${AppID}&secret=${AppSecret}&js_code=${code}&grant_type=authorization_code`
 
 
@@ -15,7 +16,7 @@ class UserController extends ControllerBase {
 
   @Get('login')
   @Required(ParameterType.QueryString, [['code']])
-  async ReportLogin(ctx: ParameterizedContext<any, {}>) {
+  async ReportLogin(ctx: ParameterizedContext) {
     const { Wechat: { AppID, AppSecret } } = AppConfig
     try {
       const { data, status } = await axios.get(Code2SessionUrl(AppID, AppSecret, ctx.query.code))
@@ -38,6 +39,11 @@ class UserController extends ControllerBase {
     }
   }
 
+  @Get('token')
+  @Required(ParameterType.QueryString,[['uid']])
+  async ReturnTestToken(ctx : ParameterizedContext) {
+    ctx.body = CreateToken({ UID : ctx.query.uid})
+  }
 
   @Get('notify')
   @Authorize

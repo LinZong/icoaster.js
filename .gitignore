@@ -96,4 +96,5 @@ typings/
 
 # ignore sensitive info.
 app.json
+app-*.json
 dist/
