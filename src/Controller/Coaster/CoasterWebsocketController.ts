@@ -67,7 +67,7 @@ export default class CoasterWebsocketController extends ControllerBase {
         if (bindReq.length === 2 && bindReq[1] === '0') {
 
           // 说明当前服务器上有Pending请求未处理，立即将此请求发往客户端。
-          RequestToBind(did, bindReq[0])
+          RequestBind(did, bindReq[0])
         }
       }
     })
@@ -101,29 +101,31 @@ export default class CoasterWebsocketController extends ControllerBase {
   @WebSocketPath('report')
   async CoasterReportUsageData(ctx: MiddlewareContext<any>) {
     const { did, type } = ctx.query
-    ctx.websocket.on('open', () => {
-      if (!this.ValidateDid(did)) {
-        ctx.websocket.close()
-        return
-      }
 
-      if (!DetectIfDidIsBound(did)) {
-        console.warn("此杯垫没有绑定任何用户, 立刻关闭连接.")
+    if (!this.ValidateDid(did)) {
+      ctx.websocket.close()
+      return
+    }
 
-        ctx.websocket.close(1000, "Haven't bound any user, should not connect to this api.")
-      }
-    })
     ctx.websocket.on('message', (coasterData) => {
       // 做data的iv向量解密
       TryParseJSON(coasterData.toString())
         .then(async (message) => {
           switch (message.cmd) {
             case 'bind':
-              console.log(`User ${message.uid} is now bind to coaster ${did}`)
               const PersistBindRelationship = await BindDevice(message.uid, did, type)
               if (PersistBindRelationship) {
                 this.AddToConnectionPool(did, message.uid, ctx)
                 console.log(`杯垫 ${did} 与用户 ${message.uid} 成功完成绑定!`)
+                ctx.websocket.send(JSON.stringify({
+                  cmd: "bound"
+                }))
+              }
+              break
+            case 'bound':
+              const IsBound = await DetectIfDidIsBound(did)
+              if (!IsBound) ctx.websocket.close(1000, 'Not bound. Close immediately.')
+              else {
                 ctx.websocket.send(JSON.stringify({
                   cmd: "bound"
                 }))
@@ -165,7 +167,7 @@ export default class CoasterWebsocketController extends ControllerBase {
   }
 }
 
-export function RequestToBind(did: string, uid: string) {
+export function RequestBind(did: string, uid: string) {
   const [remoteCtx] = PrepareToBindConnectionPool.get(did) || []
   if (remoteCtx) {
     remoteCtx.websocket.send(JSON.stringify({
@@ -188,7 +190,7 @@ export function RequestToBind(did: string, uid: string) {
 export async function RequestUnbind(did : string) {
   const remoteCtx = BindedCoasterConnection.get(did)
   await UnbindDevice(did)
-  
+
   if (remoteCtx) {
     remoteCtx.websocket.send(JSON.stringify({
       cmd: 'unbind'

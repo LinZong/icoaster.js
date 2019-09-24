@@ -1066,15 +1066,15 @@
         "signature": "bca7dae03a03d2a9f8dfa5c22a825fb24cd88daaa5a89e26a6aef1d20bf2f5d5"
       },
       "./src/service/device.ts": {
-        "version": "f95f8c5372000fbaf27576b5a35615abd73b4f6106013fea6a93d9ddaef208da",
+        "version": "f8bd800670949f7c606e2abba4217a36daae8fcffece630173b45cd1922bd5d4",
         "signature": "e07ce61e825e420f323b8f2349276113f58c616e9397d0ef6b4c92ebdbe9a696"
       },
       "./src/controller/coaster/coasterwebsocketcontroller.ts": {
-        "version": "26d13c07b444f8baf3309a26562870902507271bd8442240b043815e719a2710",
-        "signature": "3ac893b88f12aec70361910adb66e63cb9216e8c2d8e90aa51defd02fe76fb5c"
+        "version": "f657375543d4889a533c3120cded3add0587c358a67901df1d8a0e224eae4b48",
+        "signature": "faeaf4cb25c5bb3be5c4eec1dde24c031119eacfa3893b017c4a0870796c0f56"
       },
       "./src/controller/device.ts": {
-        "version": "d81ef65c084de0de1c480b71a07eefe0392b9e798912ad4b79a907ec314f8b84",
+        "version": "232920ecef9b270a35465bc45fb886c6d013509b077ea6480c062e4b84ad0428",
         "signature": "770dd2acd36d73b8ce1e8241b4dadcb5423beefcf486b16d3cdd77fbdd207ff4"
       },
       "./src/persistence/model/drinkingrecords.ts": {

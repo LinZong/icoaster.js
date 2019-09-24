@@ -117,7 +117,7 @@ const DetectIfDidIsBound = async(Did : string) => {
 const UnbindDevice = async (Did: string,authUser? : string) => {
   const UID = await GetDidBindUser(Did)
   if(authUser && authUser !== UID) return { StatusCode : -3 }
-  // 0 正常完成, -1 没有绑定杯垫， -2 数据库读写错误.
+  // 0 正常完成, -1 没有绑定杯垫， -2 数据库读写错误, -3 必须绑定账号主动解绑。
   const condition = {
     UID: UID,
     DeviceID: Did
