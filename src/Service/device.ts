@@ -2,11 +2,12 @@ import { UserBindDevice } from "../Persistence/Model/User";
 import GetAES256GCMCipher from "../Utils/AES256GCMCipher";
 import { TryParseJSON } from "../Utils/common";
 import moment = require("moment");
-import RedisClient from "../Persistence/RedisConfig";
-
+import Redis from "../Persistence/RedisConfig";
+import Environments from '../Persistence/Model/Envrionments'
 const { Decrypter } = GetAES256GCMCipher()
+
 const CoasterUploadUserStatus = async (Did: string, Message: any) => {
-  const UID = GetDidBindUSer(Did)
+  const UID = await GetDidBindUser(Did)
   const { cmd, encrypted, iv } = Message
   // Discard messages which cannot be decrypted.
   if (encrypted && iv) {
@@ -15,33 +16,75 @@ const CoasterUploadUserStatus = async (Did: string, Message: any) => {
     TryParseJSON(data).then(obj => {
       switch (cmd) {
         case 'env':
-          const { wet, temp } = obj
+          const { Wet, Temp } = obj
           // Persist that data to db.
-          console.log(`Environment data: ${wet}, ${temp}`)
+          console.log(`Environment data: ${Wet}, ${Temp}`)
+          SaveEnvrionmentReport(UID, {
+            Time : now,
+            Wet: Wet,
+            Temp: Temp
+          })
           break
         case 'drink':
-          const { vol } = obj
+          SaveDrinkingRecord(UID, {
+            Time : now,
+            ...obj
+          })
           break
       }
     })
   }
 }
 
-const GetDidBindUSer = (did : string) : string => {
-  return '3ijdiz7hjxg'
+const SaveDrinkingRecord = async (UID: string, Record: any) => {
+  await Environments.updateOne({ UID: UID }, {
+    $push: {
+      records: Record
+    }
+  }, { upsert: true })
+}
+
+const SaveEnvrionmentReport = async (UID: string, Report: any) => {
+  await Environments.updateOne({ UID: UID }, {
+    $push: {
+      records: Report
+    }
+  }, { upsert: true })
+}
+
+const GetDidBindUser = async (did: string) => {
+  try {
+    const cachedUser = await Redis.PromiseGet('bind:' + did)
+    if (cachedUser) return cachedUser
+  }
+  catch {
+    // Fall back to search in database.
+  }
+  const device = await UserBindDevice.findOne({ where: { DeviceID: did } })
+  Redis.SET('bind:' + did, device.UID, 'EX', 60 * 60 * 12)
+  return device.UID
 }
 
 const BindDevice = async (UID: string, Did: string, type: number) => {
-  await UserBindDevice.findOrCreate({
+  // 清除从前的绑定信息
+  Redis.DEL('bind:' + Did)
+
+  return await UserBindDevice.findOrCreate({
     where: {
       UID: UID
     },
     defaults: { UID: UID, DeviceID: Did, Type: type } as UserBindDevice
   }).then(async ([bind, created]) => {
-    if (created) RedisClient.DEL(Did)
+    if (created) {
+      Redis.DEL(Did)
+      return true
+    }
     else {
       console.log(`User ${UID} have been bind a coaster. Updating info.`)
-      await UserBindDevice.update({ DeviceID: Did, Type: type }, { where: { UID: UID } })
+      return await UserBindDevice.update({ DeviceID: Did, Type: type }, { where: { UID: UID } }).then(([affect, devices]) => {
+        if (affect === 1 && devices[0].UID === UID) return true
+        return false
+      })
     }
   })
 }
@@ -67,8 +110,14 @@ const GetBoundDevice = async (UID: string) => {
     })
 }
 
-const UnbindDevice = async (UID: string, Did: string) => {
-  // 0 正常完成, -1 没有绑定杯垫， -2 数据库读写错误.
+const DetectIfDidIsBound = async(Did : string) => {
+  return await UserBindDevice.findOne({where : { DeviceID : Did}})
+}
+
+const UnbindDevice = async (Did: string,authUser? : string) => {
+  const UID = await GetDidBindUser(Did)
+  if(authUser && authUser !== UID) return { StatusCode : -3 }
+  // 0 正常完成, -1 没有绑定杯垫， -2 数据库读写错误, -3 必须绑定账号主动解绑。
   const condition = {
     UID: UID,
     DeviceID: Did
@@ -86,6 +135,9 @@ const UnbindDevice = async (UID: string, Did: string) => {
       where: condition
     });
     if (device) {
+      // 删除掉缓存中的用户关联信息
+      Redis.DEL('bind:' + Did)
+      // 告知杯垫已经被用户解绑, 返回可被发现状态。
       return await UserBindDevice.destroy({
         where: condition
       }).thenReturn({ StatusCode: 0 }).catchReturn({ StatusCode: -2 })
@@ -99,4 +151,4 @@ const UnbindDevice = async (UID: string, Did: string) => {
   }
 }
 
-export { BindDevice, GetBoundDevice, UnbindDevice, CoasterUploadUserStatus }
+export { DetectIfDidIsBound, BindDevice, GetBoundDevice, UnbindDevice, CoasterUploadUserStatus }
