@@ -98,3 +98,4 @@ typings/
 app.json
 app-*.json
 dist/
+.tsIncrement
