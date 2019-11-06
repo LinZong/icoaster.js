@@ -21,7 +21,7 @@
     "koa-router": "^7.4.0",
     "koa-websocket": "^6.0.0",
     "moment": "^2.24.0",
-    "mongoose": "^5.7.1",
+    "mongoose": "^5.7.5",
     "mysql2": "^1.7.0",
     "redis": "^2.8.0",
     "safe-touch": "^0.2.5",
