@@ -23,7 +23,7 @@
     "moment": "^2.24.0",
     "mongoose": "^5.7.1",
     "mysql2": "^1.7.0",
-    "redis": "^2.8.0",
+    "redis": "^3.1.1",
     "safe-touch": "^0.2.5",
     "sequelize": "^5.19.0"
   },
